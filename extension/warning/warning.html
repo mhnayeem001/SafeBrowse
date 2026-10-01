@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeBrowse X — Website Blocked</title>
+  <link rel="stylesheet" href="warning.css">
+</head>
+<body>
+  <div class="warning-wrapper">
+    <!-- Top Brand Bar -->
+    <header class="warning-header">
+      <div class="logo">
+        <img src="../assets/icon48.png" alt="SafeBrowse X">
+        <span class="logo-title">SafeBrowse <span class="highlight">X</span></span>
+      </div>
+      <div class="mode-indicator">Real-Time Threat Interception</div>
+    </header>
+
+    <!-- Main Warning Card -->
+    <main class="warning-card">
+      <div class="threat-icon-container">
+        <svg class="threat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+
+      <div class="card-content">
+        <div class="threat-meta">
+          <span class="threat-tag" id="threatTag">CONFIRMED PHISHING THREAT</span>
+          <span class="risk-badge" id="riskBadge">Risk: 95/100</span>
+        </div>
+
+        <h1 class="warning-title">Deceptive or Malicious Website Blocked</h1>
+        <p class="warning-desc">
+          SafeBrowse X intercepted your navigation to a web location exhibiting malicious characteristics, such as credential harvesting, brand impersonation, or malware distribution.
+        </p>
+
+        <!-- Blocked Target URL Box -->
+        <div class="target-url-box">
+          <span class="url-label">BLOCKED TARGET:</span>
+          <code class="url-code" id="blockedUrl">https://example-blocked-site.com</code>
+        </div>
+
+        <!-- Explainable Threat Breakdown -->
+        <div class="threat-reasons-box">
+          <h3 class="reasons-heading">Why was this website blocked?</h3>
+          <ul class="reasons-list" id="reasonsList">
+            <li>Domain exhibits brand spoofing indicators impersonating a trusted financial entity.</li>
+            <li>Contains deceptive login form metadata associated with credential harvesting.</li>
+          </ul>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="goBackBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Return to Safety
+          </button>
+          <button class="btn btn-secondary" id="toggleDetailsBtn">
+            Technical Details
+          </button>
+        </div>
+
+        <!-- Collapsible Technical Diagnostics -->
+        <div class="technical-details hidden" id="techDetails">
+          <div class="diag-item">
+            <span class="diag-key">Threat Classification:</span>
+            <span class="diag-val" id="diagThreat">PHISHING</span>
+          </div>
+          <div class="diag-item">
+            <span class="diag-key">Detection Engine:</span>
+            <span class="diag-val">SafeBrowse Multi-Signal Adaptive Risk Engine</span>
+          </div>
+          <div class="diag-item">
+            <span class="diag-key">Confidence Level:</span>
+            <span class="diag-val" id="diagConfidence">98%</span>
+          </div>
+          <div class="diag-item">
+            <span class="diag-key">Decision:</span>
+            <span class="diag-val" style="color: #ef4444; font-weight: 700;">BLOCK (Pre-Navigation)</span>
+          </div>
+
+          <div class="override-zone" id="overrideZone">
+            <p class="override-warn">Bypassing security protection exposes your device, passwords, and private data to theft.</p>
+            <button class="btn btn-danger-outline" id="overrideBtn">Proceed Anyway (Unsafe)</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="warning-footer">
+      <span>Protected by SafeBrowse X Defense Network</span>
+      <span>•</span>
+      <a href="http://localhost:5173" target="_blank" class="footer-link">SafeBrowse Security Center</a>
+    </footer>
+  </div>
+
+  <script src="warning.js"></script>
+</body>
+</html>

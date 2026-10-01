@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeBrowse X — Settings & Preferences</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="options-container">
+    <header class="options-header">
+      <div class="brand">
+        <img src="../assets/icon48.png" alt="SafeBrowse X">
+        <div>
+          <h1>SafeBrowse <span class="highlight">X</span> Protection Settings</h1>
+          <p class="subtitle">Configure real-time threat intelligence and local security policies</p>
+        </div>
+      </div>
+      <div class="save-status" id="saveStatus">All changes saved</div>
+    </header>
+
+    <main class="settings-grid">
+      <!-- Section: General Engine -->
+      <div class="settings-card">
+        <h2>General Engine & Connectivity</h2>
+        <div class="form-group">
+          <label for="backendUrl">Security Core API Endpoint</label>
+          <input type="text" id="backendUrl" class="input-field" placeholder="http://127.0.0.1:8000">
+          <small>Default local engine or enterprise cloud threat API endpoint.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="securityMode">Security Sensitivity Policy</label>
+          <select id="securityMode" class="select-field">
+            <option value="NORMAL">Normal — Optimal balance, blocks confirmed threats with zero false positives</option>
+            <option value="STRICT">Strict — Heightened scrutiny for suspicious/unverified domains</option>
+            <option value="MAXIMUM">Maximum — Aggressive pre-navigation filtering for high-risk environments</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="privacyMode">Privacy Architecture</label>
+          <select id="privacyMode" class="select-field">
+            <option value="BALANCED">Balanced — Hashes & normalizes URLs, queries reputation on unknown targets</option>
+            <option value="MINIMAL">Minimal — Maximum local-only rules, minimal external network requests</option>
+            <option value="MAXIMUM">Maximum Protection — Deep multi-signal DOM & heuristic cloud verification</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Section: Local Whitelist -->
+      <div class="settings-card">
+        <h2>Local Whitelist (Trusted Domains)</h2>
+        <p class="card-desc">Domains listed here will always be allowed immediately without pre-navigation delays.</p>
+        <div class="list-input-row">
+          <input type="text" id="newWhitelistItem" class="input-field" placeholder="e.g. internal-portal.example.com">
+          <button class="btn btn-primary" id="addWhitelistBtn">Add Domain</button>
+        </div>
+        <div class="tags-container" id="whitelistTags"></div>
+      </div>
+
+      <!-- Section: Local Blacklist -->
+      <div class="settings-card">
+        <h2>Local Blacklist (Hard Block)</h2>
+        <p class="card-desc">Domains listed here will be blocked unconditionally before navigation starts.</p>
+        <div class="list-input-row">
+          <input type="text" id="newBlacklistItem" class="input-field" placeholder="e.g. suspicious-phish.net">
+          <button class="btn btn-danger" id="addBlacklistBtn">Block Domain</button>
+        </div>
+        <div class="tags-container" id="blacklistTags"></div>
+      </div>
+
+      <!-- Section: Maintenance -->
+      <div class="settings-card">
+        <h2>Cache & Diagnostic Tools</h2>
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="clearCacheBtn">Clear Local Reputation Cache</button>
+          <button class="btn btn-secondary" id="testConnBtn">Test Backend Connection</button>
+        </div>
+        <div class="conn-result" id="connResult"></div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

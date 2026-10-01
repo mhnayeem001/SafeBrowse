@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeBrowse X</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="brand">
+        <img src="../assets/icon32.png" alt="SafeBrowse X" class="logo-icon">
+        <div class="brand-text">
+          <span class="brand-name">SafeBrowse <span class="accent-x">X</span></span>
+          <span class="brand-sub">Real-Time Threat Guard</span>
+        </div>
+      </div>
+      <div class="status-pill active" id="protectionBadge">ACTIVE</div>
+    </header>
+
+    <!-- Main Threat Card -->
+    <div class="threat-card" id="threatCard">
+      <div class="card-top">
+        <div class="domain-info">
+          <span class="label">CURRENT DOMAIN</span>
+          <h2 class="domain-name" id="currentDomain">Loading...</h2>
+        </div>
+        <div class="verdict-badge safe" id="verdictBadge">SAFE</div>
+      </div>
+
+      <!-- Risk Meter -->
+      <div class="risk-section">
+        <div class="risk-labels">
+          <span>Risk Level: <strong id="riskScore">0/100</strong></span>
+          <span>Confidence: <strong id="confidenceScore">99%</strong></span>
+        </div>
+        <div class="meter-bar">
+          <div class="meter-fill" id="meterFill" style="width: 5%;"></div>
+        </div>
+      </div>
+
+      <!-- Threat Reasons List -->
+      <div class="reasons-container" id="reasonsContainer">
+        <div class="reason-item safe">
+          <span class="dot"></span>
+          <span class="text" id="primaryReason">No active threat indicators detected</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Controls -->
+    <div class="controls-grid">
+      <div class="control-item">
+        <span class="control-label">Security Mode</span>
+        <select id="modeSelect" class="mode-select">
+          <option value="NORMAL">Normal (Low noise)</option>
+          <option value="STRICT">Strict (Cautious)</option>
+          <option value="MAXIMUM">Maximum (Defensive)</option>
+        </select>
+      </div>
+
+      <div class="toggle-row">
+        <span>Real-Time Protection</span>
+        <label class="switch">
+          <input type="checkbox" id="protectionToggle" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions-section">
+      <button class="btn btn-secondary" id="whitelistBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        Trust This Domain
+      </button>
+      <button class="btn btn-outline" id="reportBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Report Issue
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <a href="http://localhost:5173" target="_blank" class="footer-link" id="openDashboard">
+        <span>Open Security Center</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+      <a href="../options/options.html" target="_blank" class="settings-icon-link" title="Settings">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </a>
+    </footer>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

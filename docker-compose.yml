@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: safebrowse_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql+asyncpg://safebrowse:safebrowse_secret_2026@postgres:5432/safebrowse_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=prod-secret-key-safebrowse-defense-network-88231
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - safebrowse_net
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    container_name: safebrowse_dashboard
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    networks:
+      - safebrowse_net
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: safebrowse_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=safebrowse
+      - POSTGRES_PASSWORD=safebrowse_secret_2026
+      - POSTGRES_DB=safebrowse_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - safebrowse_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: safebrowse_redis
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+    networks:
+      - safebrowse_net
+
+networks:
+  safebrowse_net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:
