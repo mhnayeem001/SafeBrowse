@@ -1,28 +1,50 @@
 import unicodedata
 from typing import Dict, List, Optional, Tuple, Set
 
+# Comprehensive Map of major global brands to their legitimate registered domains
 PROTECTED_BRANDS = {
-    "google": ["google.com", "google.co.uk", "google.ca", "google.de", "google.fr", "google.com.au"],
-    "microsoft": ["microsoft.com", "live.com", "office.com", "office365.com", "outlook.com", "msn.com"],
-    "apple": ["apple.com", "icloud.com"],
-    "amazon": ["amazon.com", "amazon.co.uk", "amazon.de", "amazon.co.jp", "amazon.in", "aws.amazon.com"],
-    "paypal": ["paypal.com", "paypal.me"],
-    "netflix": ["netflix.com"],
-    "meta": ["meta.com", "facebook.com", "instagram.com", "whatsapp.com", "messenger.com"],
-    "chase": ["chase.com"],
+    "google": [
+        "google.com", "google.co.uk", "google.ca", "google.com.bd", "google.de", 
+        "google.fr", "google.com.au", "googleapis.com", "gstatic.com", 
+        "googleusercontent.com", "youtube.com", "gmail.com", "googlevideo.com"
+    ],
+    "microsoft": [
+        "microsoft.com", "microsoftonline.com", "live.com", "office.com", 
+        "office365.com", "outlook.com", "msn.com", "azure.com", "windows.net", 
+        "visualstudio.com", "bing.com", "microsoftedge.com", "partner.microsoft.com",
+        "sharepoint.com", "microsoft365.com", "skype.com", "xbox.com"
+    ],
+    "apple": [
+        "apple.com", "icloud.com", "apple-dns.net", "mzstatic.com", "appleid.apple.com"
+    ],
+    "amazon": [
+        "amazon.com", "amazon.co.uk", "amazon.de", "amazon.co.jp", "amazon.in", 
+        "aws.amazon.com", "amazonaws.com", "media-amazon.com", "ssl-images-amazon.com"
+    ],
+    "paypal": [
+        "paypal.com", "paypal.me", "paypal-communication.com", "paypalobjects.com"
+    ],
+    "netflix": [
+        "netflix.com", "nflxvideo.net", "nflxext.com", "nflximg.net"
+    ],
+    "meta": [
+        "facebook.com", "instagram.com", "whatsapp.com", "meta.com", 
+        "fbcdn.net", "messenger.com", "threads.net", "facebook.net"
+    ],
+    "chase": ["chase.com", "jpmorganchase.com", "jpmorgan.com"],
     "bankofamerica": ["bankofamerica.com", "bofa.com"],
     "wellsfargo": ["wellsfargo.com"],
-    "binance": ["binance.com"],
-    "coinbase": ["coinbase.com"],
-    "twitter": ["twitter.com", "x.com"],
-    "linkedin": ["linkedin.com"],
-    "dropbox": ["dropbox.com"],
-    "adobe": ["adobe.com"],
-    "steam": ["steampowered.com", "steamcommunity.com"],
+    "binance": ["binance.com", "binance.org", "binance.me", "bnapp.org"],
+    "coinbase": ["coinbase.com", "pro.coinbase.com"],
+    "twitter": ["twitter.com", "x.com", "twimg.com", "t.co"],
+    "linkedin": ["linkedin.com", "licdn.com"],
+    "dropbox": ["dropbox.com", "dropboxstatic.com", "dropboxusercontent.com"],
+    "adobe": ["adobe.com", "adobe.io", "behance.net"],
+    "steam": ["steampowered.com", "steamcommunity.com", "steamstatic.com"],
     "dhl": ["dhl.com", "dhl.de"],
     "fedex": ["fedex.com"],
     "ups": ["ups.com"],
-    "github": ["github.com"],
+    "github": ["github.com", "githubusercontent.com", "github.io", "github.dev"],
     "gitlab": ["gitlab.com"],
 }
 
@@ -107,17 +129,18 @@ class TyposquattingEngine:
         clean_label = domain_label.lower().strip()
         clean_full = full_domain.lower().strip()
 
-        # Check if legitimate
+        # Check if legitimate official domain or subdomain of official domain
         for brand, legits in PROTECTED_BRANDS.items():
-            if clean_full in legits or clean_label == brand:
-                return TyposquattingResult(
-                    is_spoofed=False,
-                    matched_brand=brand,
-                    similarity_score=100.0,
-                    confidence=95.0,
-                    technique="LEGITIMATE_DOMAIN",
-                    reasons=[f"Recognized official domain for '{brand}'"]
-                )
+            for legit in legits:
+                if clean_full == legit or clean_full.endswith("." + legit) or clean_label == brand:
+                    return TyposquattingResult(
+                        is_spoofed=False,
+                        matched_brand=brand,
+                        similarity_score=100.0,
+                        confidence=95.0,
+                        technique="LEGITIMATE_DOMAIN",
+                        reasons=[f"Recognized official domain for '{brand}'"]
+                    )
 
         normalized_label = self.normalize_confusables(clean_label)
         reasons = []
@@ -144,7 +167,7 @@ class TyposquattingEngine:
                     reasons.append(f"Domain embeds protected brand name or homoglyph '{brand}' in an unauthorized compound domain")
                     break
 
-            # Check 2: Edit distance on original label or normalized label
+            # Check 2: Edit distance on original label
             dist = self.damerau_levenshtein_distance(clean_label, brand)
             max_len = max(brand_len, label_len)
             sim_score = max(0.0, (1.0 - (dist / max_len)) * 100.0)

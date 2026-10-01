@@ -13,8 +13,10 @@ const DEFAULT_CONFIG = {
   securityMode: 'NORMAL', // NORMAL, STRICT, MAXIMUM
   privacyMode: 'BALANCED', // MINIMAL, BALANCED, MAXIMUM
   whitelist: [
-    'google.com', 'microsoft.com', 'apple.com', 'github.com', 
-    'wikipedia.org', 'mozilla.org', 'amazon.com', 'youtube.com'
+    'google.com', 'microsoft.com', 'microsoftonline.com', 'live.com', 'office.com',
+    'apple.com', 'github.com', 'wikipedia.org', 'mozilla.org', 'amazon.com',
+    'youtube.com', 'facebook.com', 'instagram.com', 'linkedin.com', 'twitter.com',
+    'x.com', 'partner.microsoft.com', 'azure.com', 'windows.net'
   ],
   blacklist: [
     'malware-traffic-analysis.net', 'evil-phishing-test.com',
@@ -27,6 +29,11 @@ chrome.runtime.onInstalled.addListener(async () => {
   const existing = await chrome.storage.local.get(['config']);
   if (!existing.config) {
     await chrome.storage.local.set({ config: DEFAULT_CONFIG });
+  } else {
+    // Merge any missing safe whitelist items
+    const mergedWl = Array.from(new Set([...(existing.config.whitelist || []), ...DEFAULT_CONFIG.whitelist]));
+    existing.config.whitelist = mergedWl;
+    await chrome.storage.local.set({ config: existing.config });
   }
   console.log('[SafeBrowse X] Extension initialized successfully.');
 });
@@ -61,12 +68,12 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   if (!norm.isValid || norm.isInternal) return;
 
   // 1. Check Local Whitelist (Instant ALLOW)
-  if (isWhitelisted(norm.registeredDomain, config.whitelist)) {
+  if (isWhitelisted(norm.registeredDomain, config.whitelist) || isWhitelisted(norm.hostname, config.whitelist)) {
     return;
   }
 
   // 2. Check Local Blacklist (Instant BLOCK)
-  if (isBlacklisted(norm.registeredDomain, config.blacklist)) {
+  if (isBlacklisted(norm.registeredDomain, config.blacklist) || isBlacklisted(norm.hostname, config.blacklist)) {
     redirectToWarning(details.tabId, details.url, 'BLACKLISTED', 100, 100, [
       'Domain is listed in local security blacklist'
     ]);
@@ -149,7 +156,6 @@ chrome.downloads.onCreated.addListener(async (downloadItem) => {
     const fakeDocs = ['.pdf', '.doc', '.docx', '.jpg', '.png', '.xlsx', '.zip'];
 
     if (fakeDocs.includes(penultimate) && riskyFinal.includes(finalExt)) {
-      // Pause download and alert user
       try {
         await chrome.downloads.pause(downloadItem.id);
         chrome.notifications.create({
@@ -211,11 +217,11 @@ async function handleGetTabStatus(url) {
   const norm = normalizeURL(url);
   const config = await getConfig();
 
-  if (isWhitelisted(norm.registeredDomain, config.whitelist)) {
+  if (isWhitelisted(norm.registeredDomain, config.whitelist) || isWhitelisted(norm.hostname, config.whitelist)) {
     return { status: 'SAFE', risk: 0, confidence: 99, domain: norm.registeredDomain, reasons: ['In verified whitelist'] };
   }
 
-  if (isBlacklisted(norm.registeredDomain, config.blacklist)) {
+  if (isBlacklisted(norm.registeredDomain, config.blacklist) || isBlacklisted(norm.hostname, config.blacklist)) {
     return { status: 'BLOCKED', risk: 100, confidence: 100, domain: norm.registeredDomain, reasons: ['In security blacklist'] };
   }
 
@@ -239,7 +245,6 @@ async function handleAddWhitelist(domain) {
   if (!config.whitelist.includes(domain)) {
     config.whitelist.push(domain);
     await chrome.storage.local.set({ config });
-    // Also notify backend if online
     try {
       await fetch(`${config.backendUrl}/api/v1/whitelist`, {
         method: 'POST',
